@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -14,6 +16,8 @@ export default function LoginPage() {
     e.preventDefault();
     // Form submission logic will be added later
     console.log('Form submitted:', { email, password });
+    // Navigate to dashboard
+    router.push('/dashboard');
   };
 
   return (
