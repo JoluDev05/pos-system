@@ -20,6 +20,7 @@ export default function LoginPage() {
     router.push('/dashboard');
   };
 
+  console.log(process.env.NEXT_PUBLIC_SUPABASE_URL)
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 px-4">
       <Card className="w-full max-w-md shadow-lg">
