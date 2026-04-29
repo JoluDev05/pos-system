@@ -62,14 +62,17 @@ export function CustomersClient({ customers }: CustomersClientProps) {
       <Sidebar />
       <Navbar />
 
-      <main className="ml-64 pt-16 p-6">
+      <main className="pt-16 p-4 sm:p-6 lg:ml-64">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900">{t('customers.title')}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">{t('customers.title')}</h2>
             <p className="text-slate-600 mt-1">{t('customers.subtitle')}</p>
           </div>
-          <Button onClick={() => setIsDialogOpen(true)} className="flex items-center gap-2">
+          <Button
+            onClick={() => setIsDialogOpen(true)}
+            className="flex items-center gap-2 w-full sm:w-auto"
+          >
             <Plus className="w-4 h-4" />
             {t('customers.addCustomer')}
           </Button>
@@ -91,50 +94,51 @@ export function CustomersClient({ customers }: CustomersClientProps) {
         {/* Customers Table */}
         <Card className="overflow-hidden">
           {filteredCustomers.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[200px]">{t('customers.customerTable.name')}</TableHead>
-                  <TableHead>{t('customers.customerTable.phone')}</TableHead>
-                  <TableHead className="w-[120px]">{t('customers.customerTable.joined')}</TableHead>
-                  <TableHead className="w-[80px]">{t('customers.customerTable.actions')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredCustomers.map((customer) => (
-                  <TableRow key={customer.id}>
-                    <TableCell className="font-medium text-slate-900">
-                      {customer.name}
-                    </TableCell>
-                    <TableCell className="text-slate-600">
-                      {customer.phone}
-                    </TableCell>
-                    <TableCell className="text-slate-600 text-sm">
-
-                      {formatDate(customer.created_at)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => {
-                            setEditingCustomer(customer);
-                            setIsEditDialogOpen(true);
-                          }}
-                          className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600 hover:text-blue-600"
-                          title={t('common.edit')}
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <DeleteCustomerButton
-                          customerId={customer.id}
-                          customerName={customer.name}
-                        />
-                      </div>
-                    </TableCell>
+            <div className="w-full overflow-x-auto">
+              <Table className="min-w-[640px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[200px]">{t('customers.customerTable.name')}</TableHead>
+                    <TableHead>{t('customers.customerTable.phone')}</TableHead>
+                    <TableHead className="w-[120px]">{t('customers.customerTable.joined')}</TableHead>
+                    <TableHead className="w-[80px]">{t('customers.customerTable.actions')}</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredCustomers.map((customer) => (
+                    <TableRow key={customer.id}>
+                      <TableCell className="font-medium text-slate-900">
+                        {customer.name}
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {customer.phone}
+                      </TableCell>
+                      <TableCell className="text-slate-600 text-sm">
+                        {formatDate(customer.created_at)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingCustomer(customer);
+                              setIsEditDialogOpen(true);
+                            }}
+                            className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600 hover:text-blue-600"
+                            title={t('common.edit')}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <DeleteCustomerButton
+                            customerId={customer.id}
+                            customerName={customer.name}
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <div className="p-8 text-center">
               <p className="text-slate-600 mb-2">{t('customers.noCustomers')}</p>

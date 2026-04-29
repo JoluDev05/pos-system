@@ -80,14 +80,17 @@ export function ProductsClient({ products }: ProductsClientProps) {
       <Sidebar />
       <Navbar />
 
-      <main className="ml-64 pt-16 p-6">
+      <main className="pt-16 p-4 sm:p-6 lg:ml-64">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900">{t('products.title')}</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">{t('products.title')}</h2>
             <p className="text-slate-600 mt-1">{t('products.subtitle')}</p>
           </div>
-          <Button onClick={() => setIsDialogOpen(true)} className="flex items-center gap-2">
+          <Button
+            onClick={() => setIsDialogOpen(true)}
+            className="flex items-center gap-2 w-full sm:w-auto"
+          >
             <Plus className="w-4 h-4" />
             {t('products.addProduct')}
           </Button>
@@ -127,60 +130,62 @@ export function ProductsClient({ products }: ProductsClientProps) {
         {/* Products Table */}
         <Card className="overflow-hidden">
           {filteredProducts.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[200px]">{t('products.productTable.name')}</TableHead>
-                  <TableHead>{t('products.productTable.description')}</TableHead>
-                  <TableHead className="w-[100px]">{t('products.productTable.price')}</TableHead>
-                  <TableHead className="w-[80px]">{t('products.productTable.stock')}</TableHead>
-                  <TableHead className="w-[80px]">{t('products.productTable.actions')}</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredProducts.map((product) => (
-                  <TableRow key={product.id}>
-                    <TableCell className="font-medium text-slate-900">
-                      {product.name}
-                    </TableCell>
-                    <TableCell className="text-slate-600">
-                      {product.description}
-                    </TableCell>
-                    <TableCell className="font-semibold text-slate-900">
-                      {formatCurrency(product.price)}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`px-2 py-1 rounded text-sm font-medium ${
-                            product.stock > 0
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}
-                        >
-                          {product.stock}
-                        </span>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => {
-                            setEditingProduct(product);
-                            setIsEditDialogOpen(true);
-                          }}
-                          className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600 hover:text-blue-600"
-                          title={t('common.edit')}
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <DeleteProductButton productId={product.id} productName={product.name} />
-                      </div>
-                    </TableCell>
+            <div className="w-full overflow-x-auto">
+              <Table className="min-w-[720px]">
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[200px]">{t('products.productTable.name')}</TableHead>
+                    <TableHead>{t('products.productTable.description')}</TableHead>
+                    <TableHead className="w-[100px]">{t('products.productTable.price')}</TableHead>
+                    <TableHead className="w-[80px]">{t('products.productTable.stock')}</TableHead>
+                    <TableHead className="w-[80px]">{t('products.productTable.actions')}</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredProducts.map((product) => (
+                    <TableRow key={product.id}>
+                      <TableCell className="font-medium text-slate-900">
+                        {product.name}
+                      </TableCell>
+                      <TableCell className="text-slate-600">
+                        {product.description}
+                      </TableCell>
+                      <TableCell className="font-semibold text-slate-900">
+                        {formatCurrency(product.price)}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span
+                            className={`px-2 py-1 rounded text-sm font-medium ${
+                              product.stock > 0
+                                ? 'bg-green-100 text-green-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {product.stock}
+                          </span>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingProduct(product);
+                              setIsEditDialogOpen(true);
+                            }}
+                            className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600 hover:text-blue-600"
+                            title={t('common.edit')}
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <DeleteProductButton productId={product.id} productName={product.name} />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           ) : (
             <div className="p-8 text-center">
               <p className="text-slate-600 mb-2">{t('products.noProducts')}</p>

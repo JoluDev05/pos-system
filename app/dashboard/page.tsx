@@ -64,10 +64,10 @@ export default function DashboardPage() {
       <Navbar />
 
       {/* Main Content */}
-      <main className="ml-64 pt-16 p-6">
+      <main className="pt-16 p-4 sm:p-6 lg:ml-64">
         {/* Header */}
         <div className="mb-8">
-          <h2 className="text-3xl font-bold text-slate-900">Welcome back!</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900">Welcome back!</h2>
           <p className="text-slate-600 mt-1">Here's your business performance overview</p>
         </div>
 
