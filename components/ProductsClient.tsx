@@ -10,6 +10,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { AddProductDialog } from '@/components/AddProductDialog';
 import { EditProductDialog } from '@/components/EditProductDialog';
 import { DeleteProductButton } from '@/components/DeleteProductButton';
+import { useI18n } from '@/lib/i18n';
 import {
   Table,
   TableBody,
@@ -34,6 +35,7 @@ interface ProductsClientProps {
 }
 
 export function ProductsClient({ products }: ProductsClientProps) {
+  const { t } = useI18n();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedFilter, setSelectedFilter] = useState('all');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -41,12 +43,12 @@ export function ProductsClient({ products }: ProductsClientProps) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
 
   const filters = [
-    { id: 'all', label: 'All' },
-    { id: 'electronics', label: 'Electronics' },
-    { id: 'home', label: 'Home' },
-    { id: 'health', label: 'Health' },
-    { id: 'in-stock', label: 'In Stock' },
-    { id: 'out-stock', label: 'Out of Stock' },
+    { id: 'all', label: t('products.filters.all') },
+    { id: 'electronics', label: t('products.filters.electronics') },
+    { id: 'home', label: t('products.filters.home') },
+    { id: 'health', label: t('products.filters.health') },
+    { id: 'in-stock', label: t('products.filters.inStock') },
+    { id: 'out-stock', label: t('products.filters.outOfStock') },
   ];
 
   const filteredProducts = useMemo(() => {
@@ -82,12 +84,12 @@ export function ProductsClient({ products }: ProductsClientProps) {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900">Products</h2>
-            <p className="text-slate-600 mt-1">Manage your product inventory</p>
+            <h2 className="text-3xl font-bold text-slate-900">{t('products.title')}</h2>
+            <p className="text-slate-600 mt-1">{t('products.subtitle')}</p>
           </div>
           <Button onClick={() => setIsDialogOpen(true)} className="flex items-center gap-2">
             <Plus className="w-4 h-4" />
-            Add Product
+            {t('products.addProduct')}
           </Button>
         </div>
 
@@ -97,7 +99,7 @@ export function ProductsClient({ products }: ProductsClientProps) {
           <div className="relative">
             <Search className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
             <Input
-              placeholder="Search products by name or description..."
+              placeholder={t('products.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 border-slate-200"
@@ -128,11 +130,11 @@ export function ProductsClient({ products }: ProductsClientProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[200px]">Product Name</TableHead>
-                  <TableHead>Description</TableHead>
-                  <TableHead className="w-[100px]">Price</TableHead>
-                  <TableHead className="w-[80px]">Stock</TableHead>
-                  <TableHead className="w-[80px]">Actions</TableHead>
+                  <TableHead className="w-[200px]">{t('products.productTable.name')}</TableHead>
+                  <TableHead>{t('products.productTable.description')}</TableHead>
+                  <TableHead className="w-[100px]">{t('products.productTable.price')}</TableHead>
+                  <TableHead className="w-[80px]">{t('products.productTable.stock')}</TableHead>
+                  <TableHead className="w-[80px]">{t('products.productTable.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -168,7 +170,7 @@ export function ProductsClient({ products }: ProductsClientProps) {
                             setIsEditDialogOpen(true);
                           }}
                           className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600 hover:text-blue-600"
-                          title="Edit product"
+                          title={t('common.edit')}
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
@@ -181,9 +183,9 @@ export function ProductsClient({ products }: ProductsClientProps) {
             </Table>
           ) : (
             <div className="p-8 text-center">
-              <p className="text-slate-600 mb-2">No products found</p>
+              <p className="text-slate-600 mb-2">{t('products.noProducts')}</p>
               <p className="text-sm text-slate-500">
-                Try adjusting your search or filters
+                {t('common.search')}
               </p>
             </div>
           )}
@@ -191,7 +193,7 @@ export function ProductsClient({ products }: ProductsClientProps) {
 
         {/* Results Count */}
         <div className="mt-4 text-sm text-slate-600">
-          Showing {filteredProducts.length} of {products.length} products
+          {t('common.search')}: {filteredProducts.length} {t('common.search')} {products.length} {t('navigation.products')}
         </div>
       </main>
 

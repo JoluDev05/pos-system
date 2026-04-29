@@ -27,26 +27,26 @@ export default async function OrdersPage() {
 
   // Fetch order items for each order
   const orderIds = (orders || []).map((o: any) => o.id)
-  const { data: orderItems } = orderIds.length > 0 
+  const { data: orderItems } = orderIds.length > 0
     ? await supabase
-        .from("order_items")
-        .select("order_id, product_id, products(name), quantity, price")
-        .in("order_id", orderIds)
+      .from("order_items")
+      .select("order_id, product_id, products(name), quantity, price")
+      .in("order_id", orderIds)
     : { data: [] }
 
   const itemsByOrderId = new Map()
-  ;(orderItems || []).forEach((item: any) => {
-    const orderId = item.order_id
-    if (!itemsByOrderId.has(orderId)) {
-      itemsByOrderId.set(orderId, [])
-    }
-    itemsByOrderId.get(orderId).push({
-      id: `${item.product_id}`,
-      product_name: item.products?.name || "Unknown Product",
-      quantity: item.quantity,
-      price: item.price,
+    ; (orderItems || []).forEach((item: any) => {
+      const orderId = item.order_id
+      if (!itemsByOrderId.has(orderId)) {
+        itemsByOrderId.set(orderId, [])
+      }
+      itemsByOrderId.get(orderId).push({
+        id: `${item.product_id}`,
+        product_name: item.products?.name || "Unknown Product",
+        quantity: item.quantity,
+        price: item.price,
+      })
     })
-  })
 
   const ordersData = (orders || []).map((order: any) => ({
     id: order.id,

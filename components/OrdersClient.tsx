@@ -9,6 +9,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { AddOrderDialog } from '@/components/AddOrderDialog';
 import { DeleteOrderButton } from '@/components/DeleteOrderButton';
 import { EditOrderDialog } from '@/components/EditOrderDialog';
+import { useI18n } from '@/lib/i18n';
 import {
   Table,
   TableBody,
@@ -38,6 +39,7 @@ interface OrdersClientProps {
 }
 
 export function OrdersClient({ orders }: OrdersClientProps) {
+  const { t } = useI18n();
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
   const [isAddOrderDialogOpen, setIsAddOrderDialogOpen] = useState(false);
   const [editingOrder, setEditingOrder] = useState<Order | null>(null);
@@ -79,15 +81,15 @@ export function OrdersClient({ orders }: OrdersClientProps) {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900">Orders</h2>
-            <p className="text-slate-600 mt-1">Sales history and order details</p>
+            <h2 className="text-3xl font-bold text-slate-900">{t('orders.title')}</h2>
+            <p className="text-slate-600 mt-1">{t('orders.subtitle')}</p>
           </div>
           <Button
             onClick={() => setIsAddOrderDialogOpen(true)}
             className="bg-blue-600 hover:bg-blue-700 text-white gap-2"
           >
             <Plus className="w-4 h-4" />
-            Add Order
+            {t('orders.addOrder')}
           </Button>
         </div>
 
@@ -99,11 +101,11 @@ export function OrdersClient({ orders }: OrdersClientProps) {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[50px]"></TableHead>
-                    <TableHead className="w-[180px]">Date</TableHead>
-                    <TableHead>Customer</TableHead>
-                    <TableHead>Products</TableHead>
-                    <TableHead className="w-[150px] text-right">Total</TableHead>
-                    <TableHead className="w-[100px]">Actions</TableHead>
+                    <TableHead className="w-[180px]">{t('orders.orderTable.date')}</TableHead>
+                    <TableHead>{t('orders.orderTable.customer')}</TableHead>
+                    <TableHead>{t('orders.orderTable.id')}</TableHead>
+                    <TableHead className="w-[150px] text-right">{t('orders.orderTable.total')}</TableHead>
+                    <TableHead className="w-[100px]">{t('orders.orderTable.actions')}</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -128,10 +130,7 @@ export function OrdersClient({ orders }: OrdersClientProps) {
                         {order.customerName}
                       </TableCell>
                       <TableCell className="text-slate-600 text-sm">
-                        {order.items.length > 0 
-                          ? order.items.map(item => item.product_name).join(', ')
-                          : 'No products'
-                        }
+                        {order.id}
                       </TableCell>
                       <TableCell className="text-right font-semibold text-slate-900">
                         {formatCurrency(order.total)}
@@ -144,7 +143,7 @@ export function OrdersClient({ orders }: OrdersClientProps) {
                               setIsEditDialogOpen(true);
                             }}
                             className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600 hover:text-blue-600"
-                            title="Edit order"
+                            title={t('common.edit')}
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
@@ -154,10 +153,10 @@ export function OrdersClient({ orders }: OrdersClientProps) {
                     </TableRow>,
                     expandedRows.has(order.id) && (
                       <TableRow key={`${order.id}-details`} className="bg-slate-100">
-                          <TableCell colSpan={4}>
+                          <TableCell colSpan={6}>
                             <div className="py-4">
                               <h4 className="font-semibold text-slate-900 mb-3">
-                                Order Items ({order.items.length})
+                                {t('orders.products')} ({order.items.length})
                               </h4>
                               {order.items.length > 0 ? (
                                 <div className="space-y-2">
@@ -173,19 +172,19 @@ export function OrdersClient({ orders }: OrdersClientProps) {
                                       </div>
                                       <div className="flex items-center gap-6">
                                         <div className="text-center">
-                                          <p className="text-sm text-slate-600">Qty</p>
+                                          <p className="text-sm text-slate-600">{t('orders.quantity')}</p>
                                           <p className="font-semibold text-slate-900">
                                             {item.quantity}
                                           </p>
                                         </div>
                                         <div className="text-center">
-                                          <p className="text-sm text-slate-600">Price</p>
+                                          <p className="text-sm text-slate-600">{t('orders.unitPrice')}</p>
                                           <p className="font-semibold text-slate-900">
                                             {formatCurrency(item.price)}
                                           </p>
                                         </div>
                                         <div className="text-center">
-                                          <p className="text-sm text-slate-600">Subtotal</p>
+                                          <p className="text-sm text-slate-600">{t('orders.itemTotal')}</p>
                                           <p className="font-semibold text-slate-900">
                                             {formatCurrency(item.price * item.quantity)}
                                           </p>
@@ -195,7 +194,7 @@ export function OrdersClient({ orders }: OrdersClientProps) {
                                   ))}
                                 </div>
                               ) : (
-                                <p className="text-slate-600">No items in this order</p>
+                                <p className="text-slate-600">{t('orders.products')}</p>
                               )}
                             </div>
                           </TableCell>
@@ -207,9 +206,9 @@ export function OrdersClient({ orders }: OrdersClientProps) {
             </div>
           ) : (
             <div className="p-8 text-center">
-              <p className="text-slate-600 mb-2">No orders found</p>
+              <p className="text-slate-600 mb-2">{t('orders.noOrders')}</p>
               <p className="text-sm text-slate-500">
-                Start by creating your first order
+                {t('orders.addOrder')}
               </p>
             </div>
           )}
@@ -219,11 +218,11 @@ export function OrdersClient({ orders }: OrdersClientProps) {
         {orders.length > 0 && (
           <div className="mt-6 grid grid-cols-3 gap-4">
             <Card className="p-4">
-              <p className="text-slate-600 text-sm">Total Orders</p>
+              <p className="text-slate-600 text-sm">{t('orders.orderTable.id')}</p>
               <p className="text-2xl font-bold text-slate-900 mt-1">{orders.length}</p>
             </Card>
             <Card className="p-4">
-              <p className="text-slate-600 text-sm">Total Revenue</p>
+              <p className="text-slate-600 text-sm">{t('orders.total')}</p>
               <p className="text-2xl font-bold text-slate-900 mt-1">
                 {formatCurrency(
                   orders.reduce((sum, order) => sum + order.total, 0)
@@ -231,7 +230,7 @@ export function OrdersClient({ orders }: OrdersClientProps) {
               </p>
             </Card>
             <Card className="p-4">
-              <p className="text-slate-600 text-sm">Average Order Value</p>
+              <p className="text-slate-600 text-sm">{t('orders.average')}</p>
               <p className="text-2xl font-bold text-slate-900 mt-1">
                 {formatCurrency(
                   orders.reduce((sum, order) => sum + order.total, 0) / orders.length

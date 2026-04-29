@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { useI18n } from '@/lib/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,6 +21,7 @@ interface AddProductDialogProps {
 }
 
 export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps) {
+  const { t } = useI18n();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -50,13 +52,13 @@ export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps) 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name.trim()) newErrors.name = 'Product name is required';
-    if (!formData.description.trim()) newErrors.description = 'Description is required';
+    if (!formData.name.trim()) newErrors.name = t('validation.productNameRequired');
+    if (!formData.description.trim()) newErrors.description = t('validation.descriptionRequired');
     if (!formData.price || parseFloat(formData.price) <= 0)
-      newErrors.price = 'Valid price is required';
+      newErrors.price = t('validation.priceRequired');
     if (!formData.stock || parseInt(formData.stock) < 0)
-      newErrors.stock = 'Valid stock is required';
-    if (!formData.category.trim()) newErrors.category = 'Category is required';
+      newErrors.stock = t('validation.stockRequired');
+    if (!formData.category.trim()) newErrors.category = t('validation.categoryRequired');
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -97,7 +99,7 @@ export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps) 
       console.error('Error adding product:', error);
       setErrors((prev) => ({
         ...prev,
-        submit: 'Failed to add product. Please try again.',
+        submit: t('messages.failedToAdd', { item: t('navigation.products') }),
       }));
     } finally {
       setLoading(false);
@@ -108,17 +110,17 @@ export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps) 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Add New Product</DialogTitle>
+          <DialogTitle>{t('products.addProduct')}</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Name */}
           <div className="space-y-2">
-            <Label htmlFor="name">Product Name *</Label>
+            <Label htmlFor="name">{t('products.productName')} *</Label>
             <Input
               id="name"
               name="name"
-              placeholder="Enter product name"
+              placeholder={t('products.productNamePlaceholder')}
               value={formData.name}
               onChange={handleChange}
               className={errors.name ? 'border-red-500' : ''}
@@ -128,11 +130,11 @@ export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps) 
 
           {/* Description */}
           <div className="space-y-2">
-            <Label htmlFor="description">Description *</Label>
+            <Label htmlFor="description">{t('products.description')} *</Label>
             <Input
               id="description"
               name="description"
-              placeholder="Enter product description"
+              placeholder={t('products.descriptionPlaceholder')}
               value={formData.description}
               onChange={handleChange}
               className={errors.description ? 'border-red-500' : ''}
@@ -145,7 +147,7 @@ export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps) 
           {/* Price and Stock in one row */}
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="price">Price *</Label>
+              <Label htmlFor="price">{t('products.price')} *</Label>
               <Input
                 id="price"
                 name="price"
@@ -160,7 +162,7 @@ export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps) 
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="stock">Stock *</Label>
+              <Label htmlFor="stock">{t('products.stock')} *</Label>
               <Input
                 id="stock"
                 name="stock"
@@ -176,11 +178,11 @@ export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps) 
 
           {/* Category */}
           <div className="space-y-2">
-            <Label htmlFor="category">Category *</Label>
+            <Label htmlFor="category">{t('products.category')} *</Label>
             <Input
               id="category"
               name="category"
-              placeholder="e.g., Electronics, Home, Health"
+              placeholder={t('products.categoryPlaceholder')}
               value={formData.category}
               onChange={handleChange}
               className={errors.category ? 'border-red-500' : ''}
@@ -205,10 +207,10 @@ export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps) 
               onClick={() => onOpenChange(false)}
               disabled={loading}
             >
-              Cancel
+              {t('common.cancel')}
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Saving...' : 'Save Product'}
+              {loading ? t('common.loading') : t('common.save')}
             </Button>
           </DialogFooter>
         </form>

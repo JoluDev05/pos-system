@@ -1,5 +1,6 @@
 import { Bell, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export function Navbar() {
   return (
@@ -15,6 +16,7 @@ export function Navbar() {
         <Button variant="ghost" size="icon" className="text-slate-600">
           <Settings className="w-5 h-5" />
         </Button>
+        <LanguageSwitcher />
         
         {/* User Avatar */}
         <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white font-semibold">

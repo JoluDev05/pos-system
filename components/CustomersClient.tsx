@@ -10,6 +10,7 @@ import { Sidebar } from '@/components/Sidebar';
 import { AddCustomerDialog } from '@/components/AddCustomerDialog';
 import { EditCustomerDialog } from '@/components/EditCustomerDialog';
 import { DeleteCustomerButton } from '@/components/DeleteCustomerButton';
+import { useI18n } from '@/lib/i18n';
 import {
   Table,
   TableBody,
@@ -31,6 +32,7 @@ interface CustomersClientProps {
 }
 
 export function CustomersClient({ customers }: CustomersClientProps) {
+  const { t } = useI18n();
   const [searchTerm, setSearchTerm] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
@@ -64,12 +66,12 @@ export function CustomersClient({ customers }: CustomersClientProps) {
         {/* Header */}
         <div className="mb-8 flex items-center justify-between">
           <div>
-            <h2 className="text-3xl font-bold text-slate-900">Customers</h2>
-            <p className="text-slate-600 mt-1">Manage your customer contacts</p>
+            <h2 className="text-3xl font-bold text-slate-900">{t('customers.title')}</h2>
+            <p className="text-slate-600 mt-1">{t('customers.subtitle')}</p>
           </div>
           <Button onClick={() => setIsDialogOpen(true)} className="flex items-center gap-2">
             <Plus className="w-4 h-4" />
-            Add Customer
+            {t('customers.addCustomer')}
           </Button>
         </div>
 
@@ -78,7 +80,7 @@ export function CustomersClient({ customers }: CustomersClientProps) {
           <div className="relative">
             <Search className="absolute left-3 top-3 w-5 h-5 text-slate-400" />
             <Input
-              placeholder="Search customers by name or phone..."
+              placeholder={t('customers.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-10 border-slate-200"
@@ -92,10 +94,10 @@ export function CustomersClient({ customers }: CustomersClientProps) {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[200px]">Name</TableHead>
-                  <TableHead>Phone</TableHead>
-                  <TableHead className="w-[120px]">Joined</TableHead>
-                  <TableHead className="w-[80px]">Actions</TableHead>
+                  <TableHead className="w-[200px]">{t('customers.customerTable.name')}</TableHead>
+                  <TableHead>{t('customers.customerTable.phone')}</TableHead>
+                  <TableHead className="w-[120px]">{t('customers.customerTable.joined')}</TableHead>
+                  <TableHead className="w-[80px]">{t('customers.customerTable.actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -119,7 +121,7 @@ export function CustomersClient({ customers }: CustomersClientProps) {
                             setIsEditDialogOpen(true);
                           }}
                           className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600 hover:text-blue-600"
-                          title="Edit customer"
+                          title={t('common.edit')}
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
@@ -135,9 +137,9 @@ export function CustomersClient({ customers }: CustomersClientProps) {
             </Table>
           ) : (
             <div className="p-8 text-center">
-              <p className="text-slate-600 mb-2">No customers found</p>
+              <p className="text-slate-600 mb-2">{t('customers.noCustomers')}</p>
               <p className="text-sm text-slate-500">
-                Try adjusting your search or add a new customer
+                {t('common.search')}
               </p>
             </div>
           )}
@@ -145,7 +147,7 @@ export function CustomersClient({ customers }: CustomersClientProps) {
 
         {/* Results Count */}
         <div className="mt-4 text-sm text-slate-600">
-          Showing {filteredCustomers.length} of {customers.length} customers
+          {t('common.search')}: {filteredCustomers.length} {t('common.search')} {customers.length} {t('navigation.customers')}
         </div>
       </main>
 

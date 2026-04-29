@@ -1,3 +1,5 @@
+'use client';
+
 import {
   LayoutDashboard,
   ShoppingCart,
@@ -6,36 +8,39 @@ import {
   FileText,
 } from 'lucide-react';
 import Link from 'next/link';
-
-const navItems = [
-  {
-    href: '/dashboard',
-    label: 'Dashboard',
-    icon: LayoutDashboard,
-  },
-  {
-    href: '/cashier',
-    label: 'Cashier',
-    icon: ShoppingCart,
-  },
-  {
-    href: '/products',
-    label: 'Products',
-    icon: Package,
-  },
-  {
-    href: '/customers',
-    label: 'Customers',
-    icon: Users,
-  },
-  {
-    href: '/orders',
-    label: 'Orders',
-    icon: FileText,
-  },
-];
+import { useI18n } from '@/lib/i18n';
 
 export function Sidebar() {
+  const { t } = useI18n();
+
+  const navItems = [
+    {
+      href: '/dashboard',
+      label: t('navigation.dashboard'),
+      icon: LayoutDashboard,
+    },
+    {
+      href: '/cashier',
+      label: t('navigation.cashier'),
+      icon: ShoppingCart,
+    },
+    {
+      href: '/products',
+      label: t('navigation.products'),
+      icon: Package,
+    },
+    {
+      href: '/customers',
+      label: t('navigation.customers'),
+      icon: Users,
+    },
+    {
+      href: '/orders',
+      label: t('navigation.orders'),
+      icon: FileText,
+    },
+  ];
+
   return (
     <aside className="fixed left-0 top-0 w-64 h-screen bg-slate-900 text-white flex flex-col z-50">
       {/* Logo / Branding */}
@@ -73,7 +78,7 @@ export function Sidebar() {
 
       {/* Footer */}
       <div className="p-6 border-t border-slate-800">
-        <p className="text-xs text-slate-400">© 2026 POS System</p>
+        <p className="text-xs text-slate-400">{t('general.copyright')}</p>
       </div>
     </aside>
   );
