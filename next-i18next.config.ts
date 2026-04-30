@@ -1,7 +1,6 @@
-import type { Config } from 'next-i18next';
 import path from 'path';
 
-const config: Config = {
+const config = {
   i18n: {
     defaultLocale: 'es',
     locales: ['es', 'en'],
