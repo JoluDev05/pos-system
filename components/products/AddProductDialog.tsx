@@ -99,7 +99,7 @@ export function AddProductDialog({ open, onOpenChange }: AddProductDialogProps) 
       console.error('Error adding product:', error);
       setErrors((prev) => ({
         ...prev,
-        submit: t('messages.failedToAdd', { item: t('navigation.products') }),
+        submit: `${t('messages.failedToAdd')} ${t('navigation.products')}`,
       }));
     } finally {
       setLoading(false);
