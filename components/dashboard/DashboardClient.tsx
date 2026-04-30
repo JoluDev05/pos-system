@@ -46,10 +46,18 @@ const COLORS = ['#3b82f6', '#06b6d4', '#34d399', '#fbbf24', '#f97316'];
 const MONTH_LABELS = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
 export function DashboardClient({ orders, items }: DashboardClientProps) {
-  const [dateFilter, setDateFilter] = useState<'week' | 'month' | 'year'>('month');
+  const [dateFilter, setDateFilter] = useState<'week' | 'month' | 'year' | 'custom'>('month');
   const [monthFilter, setMonthFilter] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+  });
+  const [rangeStart, setRangeStart] = useState(() => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), now.getMonth(), 1);
+    return start.toISOString().slice(0, 10);
+  });
+  const [rangeEnd, setRangeEnd] = useState(() => {
+    return new Date().toISOString().slice(0, 10);
   });
 
   const formatCurrency = (value: number) => {
@@ -74,6 +82,18 @@ export function DashboardClient({ orders, items }: DashboardClientProps) {
     return new Date(year, month - 1, 1);
   }, [currentMonthDate]);
 
+  const customRange = useMemo(() => {
+    if (dateFilter !== 'custom') return null;
+    if (!rangeStart || !rangeEnd) return null;
+
+    const start = new Date(`${rangeStart}T00:00:00`);
+    const end = new Date(`${rangeEnd}T23:59:59.999`);
+    if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) return null;
+    if (start > end) return null;
+
+    return { start, end };
+  }, [dateFilter, rangeStart, rangeEnd]);
+
   const filteredOrders = useMemo(() => {
     const now = new Date();
     const days = dateFilter === 'week' ? 7 : null;
@@ -82,6 +102,9 @@ export function DashboardClient({ orders, items }: DashboardClientProps) {
 
     return orders.filter((order) => {
       const orderDate = new Date(order.createdAt);
+      if (customRange) {
+        if (orderDate < customRange.start || orderDate > customRange.end) return false;
+      }
       if (cutoff && orderDate < cutoff) return false;
       if (dateFilter === 'month') {
         const orderMonth = orderDate.getMonth() + 1;
@@ -91,7 +114,7 @@ export function DashboardClient({ orders, items }: DashboardClientProps) {
       if (dateFilter === 'year' && orderDate.getFullYear() !== now.getFullYear()) return false;
       return true;
     });
-  }, [orders, dateFilter, monthFilter]);
+  }, [orders, dateFilter, monthFilter, customRange]);
 
   const filteredOrderIds = useMemo(() => {
     return new Set(filteredOrders.map((order) => order.id));
@@ -111,6 +134,19 @@ export function DashboardClient({ orders, items }: DashboardClientProps) {
   const previousSalesTotal = useMemo(() => {
     const now = new Date();
     const [selectedYear, selectedMonth] = monthFilter.split('-').map(Number);
+
+    if (dateFilter === 'custom' && customRange) {
+      const rangeDuration = customRange.end.getTime() - customRange.start.getTime();
+      const previousStart = new Date(customRange.start.getTime() - rangeDuration - 1);
+      const previousEnd = new Date(customRange.end.getTime() - rangeDuration - 1);
+
+      return orders
+        .filter((order) => {
+          const orderDate = new Date(order.createdAt);
+          return orderDate >= previousStart && orderDate <= previousEnd;
+        })
+        .reduce((sum, order) => sum + order.total, 0);
+    }
 
     if (dateFilter === 'week') {
       const start = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
@@ -140,7 +176,7 @@ export function DashboardClient({ orders, items }: DashboardClientProps) {
     return orders
       .filter((order) => new Date(order.createdAt).getFullYear() === now.getFullYear() - 1)
       .reduce((sum, order) => sum + order.total, 0);
-  }, [orders, dateFilter, monthFilter]);
+  }, [orders, dateFilter, monthFilter, customRange]);
 
   const revenueDelta = previousSalesTotal > 0
     ? ((totalRevenue - previousSalesTotal) / previousSalesTotal) * 100
@@ -217,6 +253,12 @@ export function DashboardClient({ orders, items }: DashboardClientProps) {
     ];
   }, [orders, currentMonthDate, previousMonthDate]);
 
+  const hasRevenueByCategory = revenueByCategory.some((item) => item.value > 0);
+  const hasCashFlow = cashFlowData.some(
+    (item) => item.current > 0 || item.previous > 0
+  );
+  const hasTrendData = trendSixMonthsData.some((item) => item.total > 0);
+
   return (
     <div className="min-h-screen bg-slate-50">
       <Sidebar />
@@ -261,6 +303,16 @@ export function DashboardClient({ orders, items }: DashboardClientProps) {
               >
                 Anual
               </button>
+              <button
+                onClick={() => setDateFilter('custom')}
+                className={`h-9 px-4 rounded-lg text-sm font-semibold border transition-colors ${
+                  dateFilter === 'custom'
+                    ? 'bg-slate-900 text-white border-slate-900'
+                    : 'bg-white text-slate-700 border-slate-200 hover:border-slate-300'
+                }`}
+              >
+                Rango
+              </button>
             </div>
 
             {dateFilter === 'month' && (
@@ -274,6 +326,33 @@ export function DashboardClient({ orders, items }: DashboardClientProps) {
                   }
                   className="h-9 w-40"
                 />
+              </div>
+            )}
+
+            {dateFilter === 'custom' && (
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-slate-600">Desde</label>
+                  <Input
+                    type="date"
+                    value={rangeStart}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      setRangeStart(event.target.value)
+                    }
+                    className="h-9 w-40"
+                  />
+                </div>
+                <div className="flex items-center gap-2">
+                  <label className="text-sm text-slate-600">Hasta</label>
+                  <Input
+                    type="date"
+                    value={rangeEnd}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                      setRangeEnd(event.target.value)
+                    }
+                    className="h-9 w-40"
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -358,7 +437,7 @@ export function DashboardClient({ orders, items }: DashboardClientProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card className="p-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-4">Ingresos por categoria</h3>
-            {revenueByCategory.length === 0 ? (
+            {!hasRevenueByCategory ? (
               <p className="text-sm text-slate-500">Sin datos para el periodo.</p>
             ) : (
               <>
@@ -399,58 +478,66 @@ export function DashboardClient({ orders, items }: DashboardClientProps) {
             <h3 className="text-lg font-semibold text-slate-900 mb-4">
               Flujo de caja (mes actual vs mes pasado)
             </h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={cashFlowData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="name" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#1e293b',
-                    border: '1px solid #475569',
-                    borderRadius: '8px',
-                    color: '#f1f5f9',
-                  }}
-                />
-                <Legend />
-                <Line
-                  type="monotone"
-                  dataKey="current"
-                  stroke="#3b82f6"
-                  strokeWidth={2}
-                  name="Mes actual"
-                  dot={false}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="previous"
-                  stroke="#94a3b8"
-                  strokeWidth={2}
-                  name="Mes pasado"
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            {hasCashFlow ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={cashFlowData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="name" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1e293b',
+                      border: '1px solid #475569',
+                      borderRadius: '8px',
+                      color: '#f1f5f9',
+                    }}
+                  />
+                  <Legend />
+                  <Line
+                    type="monotone"
+                    dataKey="current"
+                    stroke="#3b82f6"
+                    strokeWidth={2}
+                    name="Mes actual"
+                    dot={false}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="previous"
+                    stroke="#94a3b8"
+                    strokeWidth={2}
+                    name="Mes pasado"
+                    dot={false}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-sm text-slate-500">Sin datos para el periodo.</p>
+            )}
           </Card>
 
           <Card className="p-6">
             <h3 className="text-lg font-semibold text-slate-900 mb-4">Tendencia de 6 meses</h3>
-            <ResponsiveContainer width="100%" height={250}>
-              <BarChart data={trendSixMonthsData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
-                <XAxis dataKey="name" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" />
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: '#1e293b',
-                    border: '1px solid #475569',
-                    borderRadius: '8px',
-                    color: '#f1f5f9',
-                  }}
-                />
-                <Bar dataKey="total" fill="#3b82f6" radius={[8, 8, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
+            {hasTrendData ? (
+              <ResponsiveContainer width="100%" height={250}>
+                <BarChart data={trendSixMonthsData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="name" stroke="#94a3b8" />
+                  <YAxis stroke="#94a3b8" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: '#1e293b',
+                      border: '1px solid #475569',
+                      borderRadius: '8px',
+                      color: '#f1f5f9',
+                    }}
+                  />
+                  <Bar dataKey="total" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            ) : (
+              <p className="text-sm text-slate-500">Sin datos para el periodo.</p>
+            )}
           </Card>
 
           <Card className="p-6">
