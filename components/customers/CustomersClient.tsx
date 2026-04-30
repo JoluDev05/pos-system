@@ -5,11 +5,11 @@ import { Search, Plus, Edit2 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Navbar } from '@/components/Navbar';
-import { Sidebar } from '@/components/Sidebar';
-import { AddCustomerDialog } from '@/components/AddCustomerDialog';
-import { EditCustomerDialog } from '@/components/EditCustomerDialog';
-import { DeleteCustomerButton } from '@/components/DeleteCustomerButton';
+import { Navbar } from '@/components/layout/Navbar';
+import { Sidebar } from '@/components/layout/Sidebar';
+import { AddCustomerDialog } from '@/components/customers/AddCustomerDialog';
+import { EditCustomerDialog } from '@/components/customers/EditCustomerDialog';
+import { DeleteCustomerButton } from '@/components/customers/DeleteCustomerButton';
 import { useI18n } from '@/lib/i18n';
 import {
   Table,

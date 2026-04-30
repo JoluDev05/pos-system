@@ -13,12 +13,12 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 
-interface DeleteOrderButtonProps {
-  orderId: string;
-  customerName?: string;
+interface DeleteProductButtonProps {
+  productId: string;
+  productName?: string;
 }
 
-export function DeleteOrderButton({ orderId, customerName }: DeleteOrderButtonProps) {
+export function DeleteProductButton({ productId, productName }: DeleteProductButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -29,27 +29,18 @@ export function DeleteOrderButton({ orderId, customerName }: DeleteOrderButtonPr
     setError(null);
 
     try {
-      // Delete order items first (due to foreign key constraint)
-      const { error: itemsError } = await supabase
-        .from('order_items')
+      const { error: deleteError } = await supabase
+        .from('products')
         .delete()
-        .eq('order_id', orderId);
+        .eq('id', productId);
 
-      if (itemsError) throw itemsError;
-
-      // Then delete the order
-      const { error: orderError } = await supabase
-        .from('orders')
-        .delete()
-        .eq('id', orderId);
-
-      if (orderError) throw orderError;
+      if (deleteError) throw deleteError;
 
       setShowConfirm(false);
       router.refresh();
     } catch (err) {
-      console.error('Error deleting order:', err);
-      setError('Failed to delete order. Please try again.');
+      console.error('Error deleting product:', err);
+      setError('No se pudo eliminar el producto. Intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -61,7 +52,7 @@ export function DeleteOrderButton({ orderId, customerName }: DeleteOrderButtonPr
         onClick={() => setShowConfirm(true)}
         className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={loading}
-        title="Delete order"
+        title="Eliminar producto"
       >
         <Trash2 className="w-4 h-4" />
       </button>
@@ -69,15 +60,15 @@ export function DeleteOrderButton({ orderId, customerName }: DeleteOrderButtonPr
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
-            <DialogTitle>Delete Order</DialogTitle>
+            <DialogTitle>Eliminar producto</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <p className="text-slate-600">
-              Are you sure you want to delete the order from{' '}
-              <span className="font-semibold">{customerName || 'this customer'}</span>?
+              ¿Seguro que quieres eliminar{' '}
+              <span className="font-semibold">{productName || 'este producto'}</span>?
             </p>
-            <p className="text-sm text-slate-500">This action cannot be undone.</p>
+            <p className="text-sm text-slate-500">Esta accion no se puede deshacer.</p>
 
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -93,7 +84,7 @@ export function DeleteOrderButton({ orderId, customerName }: DeleteOrderButtonPr
               onClick={() => setShowConfirm(false)}
               disabled={loading}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button
               type="button"
@@ -101,7 +92,7 @@ export function DeleteOrderButton({ orderId, customerName }: DeleteOrderButtonPr
               onClick={handleDelete}
               disabled={loading}
             >
-              {loading ? 'Deleting...' : 'Delete'}
+              {loading ? 'Eliminando...' : 'Eliminar'}
             </Button>
           </DialogFooter>
         </DialogContent>

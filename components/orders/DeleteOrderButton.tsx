@@ -13,12 +13,12 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 
-interface DeleteProductButtonProps {
-  productId: string;
-  productName?: string;
+interface DeleteOrderButtonProps {
+  orderId: string;
+  customerName?: string;
 }
 
-export function DeleteProductButton({ productId, productName }: DeleteProductButtonProps) {
+export function DeleteOrderButton({ orderId, customerName }: DeleteOrderButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -29,18 +29,36 @@ export function DeleteProductButton({ productId, productName }: DeleteProductBut
     setError(null);
 
     try {
-      const { error: deleteError } = await supabase
-        .from('products')
+      const { error: orderError } = await supabase
+        .from('orders')
         .delete()
-        .eq('id', productId);
+        .eq('id', orderId);
 
-      if (deleteError) throw deleteError;
+      if (orderError) {
+        if (orderError.code === '23503') {
+          const { error: itemsError } = await supabase
+            .from('order_items')
+            .delete()
+            .eq('order_id', orderId);
+
+          if (itemsError) throw itemsError;
+
+          const { error: retryOrderError } = await supabase
+            .from('orders')
+            .delete()
+            .eq('id', orderId);
+
+          if (retryOrderError) throw retryOrderError;
+        } else {
+          throw orderError;
+        }
+      }
 
       setShowConfirm(false);
       router.refresh();
     } catch (err) {
-      console.error('Error deleting product:', err);
-      setError('Failed to delete product. Please try again.');
+      console.error('Error deleting order:', err);
+      setError('No se pudo eliminar la orden. Intenta de nuevo.');
     } finally {
       setLoading(false);
     }
@@ -52,7 +70,7 @@ export function DeleteProductButton({ productId, productName }: DeleteProductBut
         onClick={() => setShowConfirm(true)}
         className="p-2 hover:bg-slate-100 rounded-lg transition-colors text-slate-600 hover:text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={loading}
-        title="Delete product"
+        title="Eliminar orden"
       >
         <Trash2 className="w-4 h-4" />
       </button>
@@ -60,15 +78,15 @@ export function DeleteProductButton({ productId, productName }: DeleteProductBut
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
         <DialogContent className="sm:max-w-[400px]">
           <DialogHeader>
-            <DialogTitle>Delete Product</DialogTitle>
+            <DialogTitle>Eliminar orden</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
             <p className="text-slate-600">
-              Are you sure you want to delete{' '}
-              <span className="font-semibold">{productName || 'this product'}</span>?
+              ¿Seguro que quieres eliminar la orden de{' '}
+              <span className="font-semibold">{customerName || 'este cliente'}</span>?
             </p>
-            <p className="text-sm text-slate-500">This action cannot be undone.</p>
+            <p className="text-sm text-slate-500">Esta accion no se puede deshacer.</p>
 
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
@@ -84,7 +102,7 @@ export function DeleteProductButton({ productId, productName }: DeleteProductBut
               onClick={() => setShowConfirm(false)}
               disabled={loading}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button
               type="button"
@@ -92,7 +110,7 @@ export function DeleteProductButton({ productId, productName }: DeleteProductBut
               onClick={handleDelete}
               disabled={loading}
             >
-              {loading ? 'Deleting...' : 'Delete'}
+              {loading ? 'Eliminando...' : 'Eliminar'}
             </Button>
           </DialogFooter>
         </DialogContent>

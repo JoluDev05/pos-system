@@ -5,15 +5,15 @@ import { Search, AlertCircle, CheckCircle, Loader, RefreshCw } from 'lucide-reac
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ProductCard } from '@/components/ProductCard';
-import { CartItem } from '@/components/CartItem';
-import { CartSummary } from '@/components/CartSummary';
-import { Navbar } from '@/components/Navbar';
-import { Sidebar } from '@/components/Sidebar';
+import { ProductCard } from '@/components/products/ProductCard';
+import { CartItem } from '@/components/pos/CartItem';
+import { CartSummary } from '@/components/pos/CartSummary';
+import { Navbar } from '@/components/layout/Navbar';
+import { Sidebar } from '@/components/layout/Sidebar';
 import { useCart } from '@/hooks/useCart';
 import { createOrder } from '@/lib/orders';
-import { CustomerSelector } from '@/components/CustomerSelector';
-import { CustomerHistory } from '@/components/CustomerHistory';
+import { CustomerSelector } from '@/components/customers/CustomerSelector';
+import { CustomerHistory } from '@/components/customers/CustomerHistory';
 import { supabase } from '@/lib/supabase';
 
 export interface Product {

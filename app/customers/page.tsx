@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase"
-import { CustomersClient } from "@/components/CustomersClient"
+import { CustomersClient } from "@/components/customers/CustomersClient"
 
 export default async function CustomersPage() {
   const { data: customers, error } = await supabase
@@ -12,7 +12,7 @@ export default async function CustomersPage() {
     return (
       <div className="ml-64 pt-16 p-6">
         <div className="text-center">
-          <p className="text-red-600">Error loading customers</p>
+          <p className="text-red-600">Error al cargar clientes</p>
         </div>
       </div>
     )
@@ -20,8 +20,8 @@ export default async function CustomersPage() {
 
   const customersData = (customers || []).map((customer: any) => ({
     id: customer.id,
-    name: customer.name || "Unnamed Customer",
-    phone: customer.phone || "No phone",
+    name: customer.name || "Cliente sin nombre",
+    phone: customer.phone || "Sin telefono",
     created_at: customer.created_at,
   }))
 

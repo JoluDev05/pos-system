@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase"
-import { OrdersClient } from "@/components/OrdersClient"
+import { OrdersClient } from "@/components/orders/OrdersClient"
 
 export default async function OrdersPage() {
   // Fetch orders first
@@ -30,7 +30,7 @@ export default async function OrdersPage() {
   const { data: orderItems } = orderIds.length > 0
     ? await supabase
       .from("order_items")
-      .select("order_id, product_id, products(name), quantity, price")
+      .select("order_id, product_id, products(name, category), quantity, price")
       .in("order_id", orderIds)
     : { data: [] }
 
@@ -43,6 +43,7 @@ export default async function OrdersPage() {
       itemsByOrderId.get(orderId).push({
         id: `${item.product_id}`,
         product_name: item.products?.name || "Unknown Product",
+        category: item.products?.category || "Uncategorized",
         quantity: item.quantity,
         price: item.price,
       })
@@ -51,7 +52,8 @@ export default async function OrdersPage() {
   const ordersData = (orders || []).map((order: any) => ({
     id: order.id,
     createdAt: order.created_at,
-    customerName: customersMap.get(order.customer_id) || "Unknown Customer",
+    customerId: order.customer_id,
+    customerName: customersMap.get(order.customer_id) || "Cliente general",
     total: order.total || 0,
     items: itemsByOrderId.get(order.id) || [],
   }))

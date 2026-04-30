@@ -19,9 +19,15 @@ interface CustomerSelectorProps {
   onCustomerSelect: (customerId: string | null) => void;
   selectedCustomerId: string | null;
   selectedCustomerName?: string;
+  variant?: 'card' | 'filter';
 }
 
-export function CustomerSelector({ onCustomerSelect, selectedCustomerId, selectedCustomerName }: CustomerSelectorProps) {
+export function CustomerSelector({
+  onCustomerSelect,
+  selectedCustomerId,
+  selectedCustomerName,
+  variant = 'card',
+}: CustomerSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -88,32 +94,56 @@ export function CustomerSelector({ onCustomerSelect, selectedCustomerId, selecte
   const startIndex = (safePage - 1) * pageSize;
   const pagedCustomers = filteredCustomers.slice(startIndex, startIndex + pageSize);
 
+  const triggerClasses =
+    variant === 'filter'
+      ? 'w-full rounded-md border border-slate-200 bg-white px-3 py-2 text-left text-sm text-slate-700 hover:border-slate-300 transition-colors'
+      : 'p-4 bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 cursor-pointer hover:shadow-md hover:border-blue-300 transition-all';
+
+  const triggerContent =
+    variant === 'filter' ? (
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex flex-col">
+          <span className="text-xs text-slate-500">Cliente</span>
+          <span className="font-semibold text-slate-900">
+            {selectedCustomerName || 'Todos'}
+          </span>
+        </div>
+        <Search className="w-4 h-4 text-slate-400" />
+      </div>
+    ) : (
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 flex-grow">
+          <div className="p-2 bg-blue-600 text-white rounded-lg">
+            <User className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-blue-900 opacity-75">Cliente</p>
+            <p className="text-sm font-bold text-blue-900">
+              {selectedCustomerName || 'Cliente general'}
+            </p>
+          </div>
+        </div>
+        <Search className="w-5 h-5 text-blue-600" />
+      </div>
+    );
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Card className="p-4 bg-gradient-to-r from-blue-50 to-blue-100 border-2 border-blue-200 cursor-pointer hover:shadow-md hover:border-blue-300 transition-all">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 flex-grow">
-              <div className="p-2 bg-blue-600 text-white rounded-lg">
-                <User className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-blue-900 opacity-75">Customer</p>
-                <p className="text-sm font-bold text-blue-900">
-                  {selectedCustomerName || 'General Sale'}
-                </p>
-              </div>
-            </div>
-            <Search className="w-5 h-5 text-blue-600" />
-          </div>
-        </Card>
+        {variant === 'filter' ? (
+          <button type="button" className={triggerClasses}>
+            {triggerContent}
+          </button>
+        ) : (
+          <Card className={triggerClasses}>{triggerContent}</Card>
+        )}
       </DialogTrigger>
 
       <DialogContent className="sm:max-w-[500px] p-0">
         <DialogHeader className="p-6 border-b border-slate-200">
           <DialogTitle className="flex items-center gap-2">
             <User className="w-5 h-5" />
-            Select Customer
+            Seleccionar cliente
           </DialogTitle>
         </DialogHeader>
 
@@ -128,14 +158,14 @@ export function CustomerSelector({ onCustomerSelect, selectedCustomerId, selecte
             }`}
           >
             <Users className="w-5 h-5" />
-            General Sale (No customer)
+            Cliente general (sin cliente)
           </Button>
 
           {/* Search Bar */}
           <div className="relative">
             <Search className="absolute left-3 top-3.5 w-5 h-5 text-slate-400" />
             <Input
-              placeholder="🔍 Search by name or phone..."
+              placeholder="🔍 Buscar por nombre o telefono..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -157,14 +187,14 @@ export function CustomerSelector({ onCustomerSelect, selectedCustomerId, selecte
           {/* Customers List */}
           <div className="space-y-2 max-h-80 overflow-y-auto">
             {isLoading ? (
-              <p className="text-center text-slate-600 py-4">Loading customers...</p>
+              <p className="text-center text-slate-600 py-4">Cargando clientes...</p>
             ) : customers.length === 0 ? (
               <p className="text-center text-slate-600 py-4">
-                No customers available
+                No hay clientes disponibles
               </p>
             ) : filteredCustomers.length === 0 ? (
               <p className="text-center text-slate-600 py-4">
-                No customers found for "{searchTerm}"
+                No se encontraron clientes para "{searchTerm}"
               </p>
             ) : (
               pagedCustomers.map((customer) => (
@@ -203,10 +233,10 @@ export function CustomerSelector({ onCustomerSelect, selectedCustomerId, selecte
                 onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
                 disabled={safePage === 1}
               >
-                Previous
+                Anterior
               </Button>
               <p className="text-xs text-slate-600">
-                Page {safePage} of {totalPages}
+                Pagina {safePage} de {totalPages}
               </p>
               <Button
                 variant="outline"
@@ -214,7 +244,7 @@ export function CustomerSelector({ onCustomerSelect, selectedCustomerId, selecte
                 onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
                 disabled={safePage === totalPages}
               >
-                Next
+                Siguiente
               </Button>
             </div>
           )}
@@ -225,7 +255,7 @@ export function CustomerSelector({ onCustomerSelect, selectedCustomerId, selecte
             variant="outline"
             className="w-full h-10 border-2"
           >
-            Close
+            Cerrar
           </Button>
         </div>
       </DialogContent>

@@ -59,6 +59,26 @@ CREATE POLICY IF NOT EXISTS "Anyone can read order items" ON order_items
   FOR SELECT
   USING (true);
 
+-- Orders: Allow anyone to update
+CREATE POLICY IF NOT EXISTS "Anyone can update orders" ON orders
+  FOR UPDATE
+  USING (true);
+  
+-- Orders: Allow anyone to delete
+CREATE POLICY IF NOT EXISTS "Anyone can delete orders" ON orders
+  FOR DELETE
+  USING (true);
+
+-- Order Items: Allow anyone to update
+CREATE POLICY IF NOT EXISTS "Anyone can update order items" ON order_items
+  FOR UPDATE
+  USING (true);
+
+-- Order Items: Allow anyone to delete
+CREATE POLICY IF NOT EXISTS "Anyone can delete order items" ON order_items
+  FOR DELETE
+  USING (true);
+
 -- ============================================
 -- DONE! ✅
 -- ============================================

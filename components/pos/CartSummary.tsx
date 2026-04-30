@@ -39,10 +39,10 @@ export function CartSummary({
           <div className="p-2 bg-blue-100 rounded-lg">
             <ShoppingCart className="w-5 h-5 text-blue-600" />
           </div>
-          <h3 className="text-lg font-bold text-slate-900">Cart</h3>
+          <h3 className="text-lg font-bold text-slate-900">Carrito</h3>
         </div>
         <span className="ml-auto bg-gradient-to-r from-blue-500 to-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-          {cart.itemCount} {cart.itemCount === 1 ? 'item' : 'items'}
+          {cart.itemCount} {cart.itemCount === 1 ? 'producto' : 'productos'}
         </span>
       </div>
 
@@ -55,8 +55,8 @@ export function CartSummary({
             <div className="p-4 bg-slate-100 rounded-full mb-3">
               <ShoppingCart className="w-8 h-8 text-slate-400" />
             </div>
-            <p className="text-slate-700 font-medium text-sm">No items in cart</p>
-            <p className="text-slate-500 text-xs mt-2">Add products to get started</p>
+            <p className="text-slate-700 font-medium text-sm">No hay productos en el carrito</p>
+            <p className="text-slate-500 text-xs mt-2">Agrega productos para empezar</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -67,13 +67,13 @@ export function CartSummary({
               </span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-slate-600 font-medium">Tax (0%)</span>
+              <span className="text-slate-600 font-medium">Impuestos (0%)</span>
               <span className="font-semibold text-slate-900">
                 {formatCurrency(0)}
               </span>
             </div>
             <div className="text-xs text-slate-500 bg-slate-50 p-2 rounded">
-              📦 {cart.itemCount} {cart.itemCount === 1 ? 'item' : 'items'}
+              📦 {cart.itemCount} {cart.itemCount === 1 ? 'producto' : 'productos'}
             </div>
           </div>
         )}
@@ -106,10 +106,10 @@ export function CartSummary({
           {isLoading ? (
             <>
               <div className="animate-spin mr-2 inline-block">⏳</div>
-              Processing...
+              Procesando...
             </>
           ) : (
-            '✓ Complete Sale'
+            '✓ Completar venta'
           )}
         </Button>
 
@@ -121,13 +121,13 @@ export function CartSummary({
           className="w-full font-semibold border-2 border-red-200 hover:bg-red-50 h-11"
         >
           <Trash2 className="w-4 h-4 mr-2" />
-          Clear Cart
+          Vaciar carrito
         </Button>
       </div>
 
       {/* Info Text */}
       <p className="text-xs text-slate-500 text-center mt-4">
-        👉 Review items before completing the sale
+        👉 Revisa los productos antes de completar la venta
       </p>
     </Card>
   );

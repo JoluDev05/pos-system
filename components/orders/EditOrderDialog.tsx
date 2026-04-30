@@ -93,7 +93,7 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
 
     const formattedItems = (orderItems || []).map((item: any) => ({
       product_id: item.product_id,
-      product_name: item.products?.name || 'Unknown',
+      product_name: item.products?.name || 'Desconocido',
       quantity: item.quantity,
       price: item.price,
     }));
@@ -130,15 +130,15 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.customerId) newErrors.customerId = 'Please select a customer';
-    if (formData.items.length === 0) newErrors.items = 'Add at least one item';
+    if (!formData.customerId) newErrors.customerId = 'Selecciona un cliente';
+    if (formData.items.length === 0) newErrors.items = 'Agrega al menos un producto';
 
     formData.items.forEach((item, index) => {
       if (!item.product_id) {
-        newErrors[`item_${index}_name`] = 'Product required';
+        newErrors[`item_${index}_name`] = 'Producto requerido';
       }
       if (item.quantity <= 0) {
-        newErrors[`item_${index}_qty`] = 'Quantity must be greater than 0';
+        newErrors[`item_${index}_qty`] = 'Cantidad debe ser mayor a 0';
       }
     });
 
@@ -195,7 +195,7 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
       console.error('Error updating order:', error);
       setErrors((prev) => ({
         ...prev,
-        submit: 'Failed to update order. Please try again.',
+        submit: 'No se pudo actualizar la orden. Intenta de nuevo.',
       }));
     } finally {
       setLoading(false);
@@ -206,20 +206,20 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Edit Order</DialogTitle>
+          <DialogTitle>Editar orden</DialogTitle>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4 max-h-[500px] overflow-y-auto">
           {/* Customer Selection */}
           <div className="space-y-2">
-            <Label htmlFor="customer">Customer *</Label>
+            <Label htmlFor="customer">Cliente *</Label>
             <select
               id="customer"
               value={formData.customerId}
               onChange={(e) => setFormData((prev) => ({ ...prev, customerId: e.target.value }))}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Select a customer...</option>
+              <option value="">Selecciona un cliente...</option>
               {customers.map((customer) => (
                 <option key={customer.id} value={customer.id}>
                   {customer.name}
@@ -231,7 +231,7 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
 
           {/* Order Items */}
           <div className="space-y-2">
-            <Label>Order Items *</Label>
+            <Label>Productos *</Label>
             {errors.items && <p className="text-sm text-red-600">{errors.items}</p>}
 
             <div className="space-y-3">
@@ -245,7 +245,7 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
                         errors[`item_${index}_name`] ? 'border-red-500' : 'border-slate-200'
                       }`}
                     >
-                      <option value="">Select a product...</option>
+                      <option value="">Selecciona un producto...</option>
                       {products.map((product) => (
                         <option key={product.id} value={product.id}>
                           {product.name}
@@ -259,7 +259,7 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
                   <div className="w-20">
                     <Input
                       type="number"
-                      placeholder="Qty"
+                      placeholder="Cant."
                       min="1"
                       value={item.quantity}
                       onChange={(e) => handleItemChange(index, 'quantity', e.target.value)}
@@ -272,7 +272,7 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
                   <div className="w-24">
                     <Input
                       type="number"
-                      placeholder="Price"
+                      placeholder="Precio"
                       min="0"
                       step="0.01"
                       value={item.price}
@@ -293,7 +293,7 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
                       }
                       className="px-2"
                     >
-                      Remove
+                      Quitar
                     </Button>
                   )}
                 </div>
@@ -303,7 +303,7 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
 
           {/* Order Total */}
           <div className="bg-slate-100 p-3 rounded-lg">
-            <p className="text-sm text-slate-600">Total Amount</p>
+            <p className="text-sm text-slate-600">Total</p>
             <p className="text-2xl font-bold text-slate-900">
               ${formData.items
                 .reduce((sum, item) => sum + item.price * item.quantity, 0)
@@ -321,10 +321,10 @@ export function EditOrderDialog({ order, open, onOpenChange }: EditOrderDialogPr
           {/* Buttons */}
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Updating...' : 'Update Order'}
+              {loading ? 'Actualizando...' : 'Actualizar orden'}
             </Button>
           </DialogFooter>
         </form>
