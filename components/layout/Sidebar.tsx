@@ -8,6 +8,7 @@ import {
   FileText,
 } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
 
 interface SidebarProps {
@@ -17,6 +18,7 @@ interface SidebarProps {
 
 export function Sidebar({ variant = 'desktop', onNavigate }: SidebarProps) {
   const { t } = useI18n();
+  const pathname = usePathname();
 
   const navItems = [
     {
@@ -67,7 +69,8 @@ export function Sidebar({ variant = 'desktop', onNavigate }: SidebarProps) {
       <nav className="flex-1 px-4 py-6 space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = false; // You can add active state logic here
+          const isActive =
+            pathname === item.href || pathname.startsWith(`${item.href}/`);
 
           return (
             <Link
@@ -76,7 +79,7 @@ export function Sidebar({ variant = 'desktop', onNavigate }: SidebarProps) {
               onClick={onNavigate}
               className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
                 isActive
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-blue-600 text-white shadow-sm'
                   : 'text-slate-300 hover:bg-slate-800 hover:text-white'
               }`}
             >
